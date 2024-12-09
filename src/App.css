@@ -1,4 +1,4 @@
-.App {
+/* .App {
   text-align: center;
 }
 
@@ -35,4 +35,48 @@
   to {
     transform: rotate(360deg);
   }
+}
+ */
+
+/* 모달 로딩 스피너 */
+@keyframes spin {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes rainbow {
+  0% {
+    border-top-color: red;
+  }
+  16% {
+    border-top-color: orange;
+  }
+  33% {
+    border-top-color: yellow;
+  }
+  50% {
+    border-top-color: green;
+  }
+  66% {
+    border-top-color: blue;
+  }
+  83% {
+    border-top-color: indigo;
+  }
+  100% {
+    border-top-color: violet;
+  }
+}
+
+.loader {
+  animation: spin 1s linear infinite, rainbow 3s linear infinite;
+  border: 8px solid #f3f3f3; /* Light grey */
+  border-top: 8px solid red; /* Initial color */
+  border-radius: 50%;
+  width: 64px;
+  height: 64px;
 }
