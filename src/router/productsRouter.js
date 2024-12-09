@@ -5,6 +5,7 @@ const Loading = <div>Loading...</div>;
 const ProductsList = lazy(() => import("../pages/products/ListPage")); // list에서 Main으로 이동
 const ProductsAdd = lazy(() => import("../pages/products/AddPage")); // add에서 Main으로 이동
 const ProductsRead = lazy(() => import("../pages/products/ReadPage")); // read에서 Main으로 이동
+const ProductsModify = lazy(() => import("../pages/products/ModifyPage")); // modify에서 Main으로 이동
 
 const productsRouter = () => {
   return [
@@ -35,6 +36,14 @@ const productsRouter = () => {
           <ProductsRead />
         </Suspense>
       ), // ProductsRead로
+    },
+    {
+      path: "modify/:pno",
+      element: (
+        <Suspense fallback={Loading}>
+          <ProductsModify />
+        </Suspense>
+      ),
     },
   ];
 };

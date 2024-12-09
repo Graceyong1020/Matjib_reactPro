@@ -41,6 +41,7 @@ export const putOne = async (pno, product) => {
   return res.data;
 };
 
+// 삭제
 export const deleteOne = async (pno) => {
   const res = await axios.delete(`${host}/${pno}`);
 

@@ -17,7 +17,7 @@ const host = API_SERVER_HOST; // 상품  가져오기 위한 host
 function ReadComponent({ pno }) {
   const [product, setProduct] = useState({ ...initState });
   const [fetching, setFetching] = useState(true);
-  const { moveToList, moveToModify } = useCustomMove();
+  const { moveToList, moveToModify, page, size } = useCustomMove();
 
   useEffect(() => {
     setFetching(true);
@@ -72,6 +72,10 @@ function ReadComponent({ pno }) {
             key={i}
             className="p-4 w-1/2"
             src={`${host}/api/products/view/${imgFile}`}
+            onError={(e) => {
+              e.target.onerror = null;
+              e.target.src = `${host}/images/default-thumbnail.jpg`;
+            }}
           />
         ))}
       </div>
@@ -87,7 +91,7 @@ function ReadComponent({ pno }) {
         <button
           type="button"
           className="rounded p-4 m-2 text-xl w-32 text-white bg-blue-500"
-          onClick={moveToList}
+          onClick={() => moveToList({ page, size })}
         >
           List
         </button>

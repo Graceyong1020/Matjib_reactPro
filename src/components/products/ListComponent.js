@@ -45,7 +45,10 @@ const ListComponent = () => {
 
       <div className="flex flex-wrap mx-auto p-6">
         {serverData.dtoList.map((product) => {
-          const imageUrl = `${host}/api/products/view/s_${product.uploadFileNames[0]}`;
+          const imageUrl =
+            product.uploadFileNames.length > 0
+              ? `${host}/api/products/view/s_${product.uploadFileNames[0]}`
+              : `${host}/images/default-thumbnail.jpg`;
           console.log("Image URL:", imageUrl); // 이미지 URL을 콘솔에 출력
 
           return (
