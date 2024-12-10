@@ -103,7 +103,7 @@ function ModifyComponent({ pno }) {
       {result ? (
         <ResultModal
           title={`${result}`}
-          content={"정상적으로 처리되었습니다."} //결과 모달창
+          content={"Processed successfully."} //결과 모달창
           callbackFn={closeModal}
         ></ResultModal>
       ) : (

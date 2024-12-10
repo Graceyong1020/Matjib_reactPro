@@ -68,10 +68,10 @@ const ListComponent = () => {
                       alt="product"
                       className="m-auto rounded-md w-60"
                       src={imageUrl}
-                      onError={(e) => {
+                      /* onError={(e) => {
                         e.target.onerror = null;
                         e.target.src = `${host}/images/default-thumbnail.jpg`;
-                      }}
+                      }} */
                     />
                   </div>
 

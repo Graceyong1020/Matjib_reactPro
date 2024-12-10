@@ -72,10 +72,10 @@ function ReadComponent({ pno }) {
             key={i}
             className="p-4 w-1/2"
             src={`${host}/api/products/view/${imgFile}`}
-            onError={(e) => {
+            /*  onError={(e) => {
               e.target.onerror = null;
               e.target.src = `${host}/images/default-thumbnail.jpg`;
-            }}
+            }} */
           />
         ))}
       </div>
