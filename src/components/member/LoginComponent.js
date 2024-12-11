@@ -1,28 +1,38 @@
-// 아이디, 패스워드 받아 상태
-
 import React, { useState } from "react";
-import { useDispatch } from "react-redux";
-import { login } from "../../slices/loginSlice";
+import useCustomLogin from "../../hooks/useCustomLogin";
 
 const initState = {
   email: "",
   pw: "",
 };
 
-function LoginComponent(props) {
+const LoginComponent = () => {
   const [loginParam, setLoginParam] = useState({ ...initState });
 
-  const dispatch = useDispatch();
-
-  // const {doLogoin, moveToPath} = useCustomLogin()
+  const { doLogin, moveToPath } = useCustomLogin();
 
   const handleChange = (e) => {
     loginParam[e.target.name] = e.target.value;
     setLoginParam({ ...loginParam });
   };
 
-  const handleClickLogin = (e) => {
-    dispatch(login(loginParam)); // loginSlice.js에 있는 login함수를 dispatch
+  const handleClickLogin = async (e) => {
+    e.preventDefault();
+    try {
+      const data = await doLogin(loginParam);
+      console.log(data);
+      if (data && data.error) {
+        alert("이메일과 패스워드를 다시 확인하세요");
+      } else if (data) {
+        alert("로그인 성공");
+        moveToPath("/");
+      } else {
+        alert("Unexpected error occurred");
+      }
+    } catch (error) {
+      console.error("Login failed:", error);
+      alert("An error occurred during login");
+    }
   };
 
   return (
@@ -40,11 +50,11 @@ function LoginComponent(props) {
           <input
             className="w-full p-3 rounded border border-solid border-neutral-300 shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
             name="email"
-            type={"text"}
+            type="text"
             value={loginParam.email}
             onChange={handleChange}
             placeholder="Enter your email"
-          ></input>
+          />
         </div>
       </div>
       <div className="flex justify-center">
@@ -55,11 +65,11 @@ function LoginComponent(props) {
           <input
             className="w-full p-3 rounded border border-solid border-neutral-300 shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
             name="pw"
-            type={"password"}
+            type="password"
             value={loginParam.pw}
             onChange={handleChange}
             placeholder="Enter your password"
-          ></input>
+          />
         </div>
       </div>
       <div className="flex justify-center">
@@ -76,6 +86,6 @@ function LoginComponent(props) {
       </div>
     </div>
   );
-}
+};
 
 export default LoginComponent;

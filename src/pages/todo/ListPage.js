@@ -1,4 +1,3 @@
-import { useSearchParams } from "react-router-dom"; // useSearchParams -> URL의 쿼리스트링을 가져오는 hook
 import ListComponent from "../../components/todo/ListComponent";
 
 const ListPage = () => {

@@ -1,25 +1,79 @@
-import { createSlice } from "@reduxjs/toolkit";
+import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
+import { loginPost } from "../api/memberApi";
+
+import { getCookie, setCookie, removeCookie } from "../util/cookieUtil";
 
 const initState = {
   email: "",
 };
 
+export const loginPostAsync = createAsyncThunk("loginPostAsync", (param) =>
+  loginPost(param)
+);
+
+const loadMemberCookie = () => {
+  //쿠키에서 로그인 정보 로딩
+
+  const memberInfo = getCookie("member");
+
+  //닉네임 처리
+  if (memberInfo && memberInfo.nickname) {
+    memberInfo.nickname = decodeURIComponent(memberInfo.nickname);
+  }
+
+  return memberInfo;
+};
+
 const loginSlice = createSlice({
   name: "loginSlice",
-  initialState: initState,
+  initialState: loadMemberCookie() || initState, //쿠키가 없다면 초깃값사용
   reducers: {
     login: (state, action) => {
-      //state: 기존, action: 새로운 (parameter)
-      console.log("login......................");
-      return { email: action.payload.email }; //새로운 state. useselector로 가져올 수 있음
-    },
+      console.log("login.....", action);
+      console.log(action.payload);
+      console.log("----------------");
+      /* //{email, pw로 구성 }
+      const data = action.payload;
 
-    logout: () => {
-      console.log("logout......................");
+      //새로운 상태 */
+      return { email: action.payload.email };
     },
+    logout: () => {
+      console.log("logout....");
+
+      removeCookie("member");
+      return { ...initState }; // 로그아웃
+    },
+  },
+  extraReducers: (builder) => {
+    builder
+      .addCase(loginPostAsync.fulfilled, (state, action) => {
+        console.log("fulfilled");
+
+        const payload = action.payload;
+
+        //닉네임 한글 처리
+        if (payload.nickname) {
+          payload.nickname = encodeURIComponent(payload.nickname);
+        }
+
+        //정상적인 로그인시에만 저장
+        if (!payload.error) {
+          setCookie("member", JSON.stringify(payload), 1); //1일
+        }
+
+        return payload;
+      })
+
+      .addCase(loginPostAsync.pending, (state, action) => {
+        console.log("pending");
+      })
+      .addCase(loginPostAsync.rejected, (state, action) => {
+        console.log("rejected");
+      });
   },
 });
 
-export const { login, logout } = loginSlice.actions; // action creator
+export const { login, logout } = loginSlice.actions;
 
 export default loginSlice.reducer;

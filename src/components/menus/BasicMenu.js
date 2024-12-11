@@ -28,24 +28,13 @@ const BasicMenu = () => {
               </Link>
             </li>
 
-            {/* login한 사용자만 보이는 메뉴 */}
-            {loginState.email ? (
+            {loginState.email ? ( //로그인한 사용자만 출력되는 메뉴
               <>
-                <li>
-                  <Link
-                    to={"/todo"}
-                    className="text-2xl font-bold hover:text-gray-400 transition duration-300"
-                  >
-                    WishList
-                  </Link>
+                <li className="pr-6 text-2xl font-bold">
+                  <Link to={"/todo/"}>WishList</Link>
                 </li>
-                <li>
-                  <Link
-                    to={"/products"}
-                    className="text-2xl font-bold hover:text-gray-400 transition duration-300"
-                  >
-                    Matjib
-                  </Link>
+                <li className="pr-6 text-2xl font-bold">
+                  <Link to={"/products/"}>Matjib</Link>
                 </li>
               </>
             ) : (
@@ -55,12 +44,21 @@ const BasicMenu = () => {
         </div>
 
         <div className="flex items-center space-x-4">
-          <Link
-            to={"/member/login"}
-            className="bg-yellow-200 text-black px-4 py-2 rounded hover:bg-yellow-400 transition duration-300"
-          >
-            LOGIN
-          </Link>
+          {!loginState.email ? (
+            <Link
+              to={"/member/login"}
+              className="bg-yellow-300 text-black px-4 py-2 rounded-full hover:bg-yellow-200 transition duration-300"
+            >
+              LOGIN
+            </Link>
+          ) : (
+            <Link
+              to={"/member/logout"}
+              className="bg-blue-500 text-white px-4 py-2 rounded-full hover:bg-blue-800 transition duration-300"
+            >
+              LOGOUT
+            </Link>
+          )}
         </div>
       </div>
     </nav>
