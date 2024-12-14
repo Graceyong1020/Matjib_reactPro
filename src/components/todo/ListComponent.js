@@ -1,7 +1,6 @@
-import React, { useEffect } from "react";
-import useCustomMove from "../../hooks/useCustomMove";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { getList } from "../../api/todoApi";
+import useCustomMove from "../../hooks/useCustomMove";
 import PageComponent from "../common/PageComponent";
 
 const initState = {
@@ -10,16 +9,17 @@ const initState = {
   pageRequestDTO: null,
   prev: false,
   next: false,
-  totalCount: 0,
+  totoalCount: 0,
   prevPage: 0,
   nextPage: 0,
   totalPage: 0,
   current: 0,
 };
 
-function ListComponent(props) {
-  const { page, size, refresh, moveToList, moveToRead } = useCustomMove();
+const ListComponent = () => {
+  const { page, size, refresh, moveToList, moveToRead } = useCustomMove(); //refresh
 
+  //serverData는 나중에 사용
   const [serverData, setServerData] = useState(initState);
 
   useEffect(() => {
@@ -27,7 +27,7 @@ function ListComponent(props) {
       console.log(data);
       setServerData(data);
     });
-  }, [page, size, refresh]); //refresh값은 클릭할때마다 바뀌어서 다시 렌더링
+  }, [page, size, refresh]);
 
   return (
     <div className="border-2 border-blue-100 mt-10 mr-2 ml-2">
@@ -36,7 +36,7 @@ function ListComponent(props) {
           <div
             key={todo.tno}
             className="w-full min-w-[400px]  p-2 m-2 rounded shadow-md"
-            onClick={() => moveToRead(todo.tno)}
+            onClick={() => moveToRead(todo.tno)} //이벤트 처리 추가
           >
             <div className="flex ">
               <div className="font-extrabold text-2xl p-2 w-1/12">
@@ -52,9 +52,13 @@ function ListComponent(props) {
           </div>
         ))}
       </div>
-      <PageComponent serverData={serverData} movePage={moveToList} />
+
+      <PageComponent
+        serverData={serverData}
+        movePage={moveToList}
+      ></PageComponent>
     </div>
   );
-}
+};
 
 export default ListComponent;

@@ -11,12 +11,13 @@ export const loginPostAsync = createAsyncThunk("loginPostAsync", (param) =>
   loginPost(param)
 );
 
+//처음 가져왔을때 만약 쿠키 있으면 쿠키에서 가져오고 없으면 초기값
 const loadMemberCookie = () => {
   //쿠키에서 로그인 정보 로딩
 
   const memberInfo = getCookie("member");
 
-  //닉네임 처리
+  //만약 쿠키가 있다면
   if (memberInfo && memberInfo.nickname) {
     memberInfo.nickname = decodeURIComponent(memberInfo.nickname);
   }

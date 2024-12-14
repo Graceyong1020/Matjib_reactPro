@@ -1,7 +1,7 @@
 import useCustomLogin from "../../hooks/useCustomLogin";
 
 const LogoutComponent = () => {
-  const { doLogout, moveToPath } = useCustomLogin();
+  const { doLogout, moveToPath } = useCustomLogin(); // 로그아웃 처리 및 경로 이동
 
   const handleClickLogout = () => {
     doLogout();

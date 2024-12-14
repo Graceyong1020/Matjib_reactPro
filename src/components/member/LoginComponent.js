@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import useCustomLogin from "../../hooks/useCustomLogin";
+import KakaoLoginComponent from "./kakoLoginComponent";
 
 const initState = {
   email: "",
@@ -9,7 +10,7 @@ const initState = {
 const LoginComponent = () => {
   const [loginParam, setLoginParam] = useState({ ...initState });
 
-  const { doLogin, moveToPath } = useCustomLogin();
+  const { doLogin, moveToPath } = useCustomLogin(); // 로그인 처리 및 경로 이동
 
   const handleChange = (e) => {
     loginParam[e.target.name] = e.target.value;
@@ -22,9 +23,9 @@ const LoginComponent = () => {
       const data = await doLogin(loginParam);
       console.log(data);
       if (data && data.error) {
-        alert("이메일과 패스워드를 다시 확인하세요");
+        alert("check your email or password");
       } else if (data) {
-        alert("로그인 성공");
+        alert("login success");
         moveToPath("/");
       } else {
         alert("Unexpected error occurred");
@@ -84,6 +85,7 @@ const LoginComponent = () => {
           </div>
         </div>
       </div>
+      <KakaoLoginComponent />
     </div>
   );
 };

@@ -31,6 +31,7 @@ const AddComponent = () => {
 
         setResult(result.TNO); //결과 데이터 변경
         setTodo({ ...initState });
+        moveToList(); //moveToList( )호출
       })
       .catch((e) => {
         console.error(e);
