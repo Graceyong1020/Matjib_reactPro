@@ -2,6 +2,7 @@ import { getKakaoLoginLink } from "../../api/kakaoApi";
 import React from "react";
 
 const kakaoLoginComponent = () => {
+  // 링크가 있는 버튼
   const link = getKakaoLoginLink();
 
   return (

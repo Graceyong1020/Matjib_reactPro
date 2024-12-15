@@ -33,11 +33,11 @@ const loginSlice = createSlice({
       console.log("login.....", action);
       console.log(action.payload);
       console.log("----------------");
-      /* //{email, pw로 구성 }
-      const data = action.payload;
+      //{email, pw로 구성 }
 
-      //새로운 상태 */
-      return { email: action.payload.email };
+      setCookie("member", JSON.stringify(action.payload), 1); //1일
+
+      return action.payload;
     },
     logout: () => {
       console.log("logout....");
