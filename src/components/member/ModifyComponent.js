@@ -16,7 +16,7 @@ const ModifyComponent = () => {
 
   const { moveToLogin } = useCustomLogin();
 
-  const [result, setResult] = useState();
+  const [result, setResult] = useState(); // result modal
 
   useEffect(() => {
     setMember({ ...loginInfo, pw: "ABCD" });
@@ -33,7 +33,7 @@ const ModifyComponent = () => {
     });
   };
 
-  const colseModal = () => {
+  const closeModal = () => {
     setResult(null);
     moveToLogin();
   };
@@ -42,9 +42,9 @@ const ModifyComponent = () => {
     <div className="mt-6">
       {result ? (
         <ResultModal
-          title={"회원정보"}
-          content={"정보수정완료"}
-          callbackFn={colseModal}
+          title={"Member Info"}
+          content={"Modified"}
+          callbackFn={closeModal}
         ></ResultModal>
       ) : (
         <></>
