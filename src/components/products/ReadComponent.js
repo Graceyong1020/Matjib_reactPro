@@ -1,10 +1,10 @@
-import React, { useEffect, useState } from "react";
 import { API_SERVER_HOST } from "../../api/todoApi";
 import { getOne } from "../../api/productsApi";
 import FetchingModal from "../common/FetchingModal";
 import useCustomMove from "../../hooks/useCustomMove";
 import useCustomCart from "../../hooks/useCustomCart";
 import useCustomLogin from "../../hooks/useCustomLogin";
+import { useQuery } from "@tanstack/react-query";
 
 const initState = {
   pno: 0,
@@ -17,14 +17,22 @@ const initState = {
 const host = API_SERVER_HOST; // 상품  가져오기 위한 host
 
 function ReadComponent({ pno }) {
-  const [product, setProduct] = useState({ ...initState });
-  const [fetching, setFetching] = useState(true);
+  //const [product, setProduct] = useState({ ...initState });
+  //const [fetching, setFetching] = useState(true);
   const { moveToList, moveToModify, page, size } = useCustomMove();
   //cart 관련 -현재 사용자 장바구니 아이템들
   const { changeCart, cartItems } = useCustomCart();
 
   //로그인한 사용자만 장바구니에 담을 수 있도록
   const { loginState } = useCustomLogin();
+
+  //v5에서는 파라미터가 객체로 들어가야함
+  const { data, isFetching } = useQuery({
+    // data: 비동기인데 동기처럼 사용할 수 있게 해줌, isFetching: 데이터를 가져오는 중인지 여부
+    queryKey: ["products", pno], //쿼리 키: 쿼리식별자
+    queryFn: () => getOne(pno),
+    staleTime: 1000 * 10, //10초 이내에는 캐시된 데이터를 사용
+  });
 
   const handleClickAddCart = () => {
     let qty = 1;
@@ -35,7 +43,7 @@ function ReadComponent({ pno }) {
       //장바구니에 이미 담긴 상품이라면
       if (
         window.confirm(
-          "이미 장바구니에 담긴 상품입니다. 수량을 변경하시겠습니까?"
+          "This product is already in the cart. Do you want to add it again?"
         )
       ) {
         return;
@@ -45,18 +53,20 @@ function ReadComponent({ pno }) {
     changeCart({ email: loginState.email, qty: qty, pno: pno });
   };
 
-  useEffect(() => {
+  /*   useEffect(() => {
     setFetching(true);
     getOne(pno).then((data) => {
       console.log(data);
       setProduct(data);
       setFetching(false);
     });
-  }, [pno]);
+  }, [pno]); */
+
+  const product = data || initState;
 
   return (
     <div className="border-2 border-sky-200 mt-10 m-2 p-4">
-      {fetching ? <FetchingModal /> : <></>}
+      {isFetching ? <FetchingModal /> : <></>}
 
       <div className="flex justify-center mt-10">
         <div className="relative mb-4 flex w-full flex-wrap items-stretch">

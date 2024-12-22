@@ -1,4 +1,3 @@
-import { useEffect, useState } from "react";
 import { getList } from "../../api/productsApi";
 import useCustomMove from "../../hooks/useCustomMove";
 import FetchingModal from "../common/FetchingModal";
@@ -6,6 +5,7 @@ import FetchingModal from "../common/FetchingModal";
 import { API_SERVER_HOST } from "../../api/todoApi";
 import PageComponent from "../common/PageComponent";
 import useCustomLogin from "../../hooks/useCustomLogin";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 
 const host = API_SERVER_HOST;
 
@@ -25,15 +25,35 @@ const initState = {
 const ListComponent = () => {
   const { page, size, refresh, moveToList, moveToRead } = useCustomMove();
 
-  const { exceptionHandle } = useCustomLogin();
+  const { exceptionHandle, moveToLoginReturn } = useCustomLogin();
 
-  //serverData는 나중에 사용
-  const [serverData, setServerData] = useState(initState);
+  // const queryClient = useQueryClient();
 
-  //for FetchingModal
-  const [fetching, setFetching] = useState(false);
+  const handleClickPage = (pageParam) => {
+    /* if (pageParam.page === parseInt(page)) {
+      queryClient.invalidateQueries("products/list");
+    } */
 
-  useEffect(() => {
+    moveToList(pageParam.page);
+  };
+
+  const { data, isFetching, error, isError } = useQuery({
+    queryKey: ["products/list", { page, size, refresh }],
+    queryFn: () => getList({ page, size }),
+    staleTime: 1000 * 5,
+  });
+
+  if (isError) {
+    return moveToLoginReturn();
+  }
+
+  if (isFetching) {
+    return <FetchingModal />;
+  }
+
+  const serverData = data || initState;
+
+  /*  useEffect(() => {
     setFetching(true);
 
     getList({ page, size })
@@ -43,11 +63,11 @@ const ListComponent = () => {
         setFetching(false);
       })
       .catch((err) => exceptionHandle(err));
-  }, [page, size, refresh]);
+  }, [page, size, refresh]); */
 
   return (
     <div className="border-2 border-blue-100 mt-10 mr-2 ml-2">
-      {fetching ? <FetchingModal /> : <></>}
+      {isFetching ? <FetchingModal /> : <></>}
 
       <div className="flex flex-wrap mx-auto p-6">
         {serverData.dtoList.map((product) => (
@@ -70,8 +90,8 @@ const ListComponent = () => {
                 </div>
 
                 <div className="bottom-0 font-extrabold bg-white">
-                  <div className="text-center p-1">이름: {product.pname}</div>
-                  <div className="text-center p-1">예산: {product.price}</div>
+                  <div className="text-center p-1">Name: {product.pname}</div>
+                  <div className="text-center p-1">Price: {product.price}</div>
                 </div>
               </div>
             </div>
@@ -81,7 +101,7 @@ const ListComponent = () => {
 
       <PageComponent
         serverData={serverData}
-        movePage={moveToList}
+        movePage={handleClickPage}
       ></PageComponent>
     </div>
   );
