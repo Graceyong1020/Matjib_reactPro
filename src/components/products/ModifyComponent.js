@@ -5,6 +5,7 @@ import FetchingModal from "../common/FetchingModal";
 import useCustomMove from "../../hooks/useCustomMove";
 import ResultModal from "../common/ResultModal";
 import { API_SERVER_HOST } from "../../api/todoApi";
+import { useQueryClient, useQuery, useMutation } from "@tanstack/react-query";
 
 const initState = {
   pno: 0,
@@ -23,16 +24,24 @@ function ModifyComponent({ pno }) {
   const [result, setResult] = useState(false); //결과 상태
   const { moveToList, moveToRead } = useCustomMove();
 
+  const delMutation = useMutation({ mutationFn: (pno) => deleteOne(pno) });
+  const modMutation = useMutation({
+    mutationFn: (product) => putOne(pno, product),
+  }); // 상품이 수정되면 pno와 product를 넘겨줌
+
   const uploadRef = useRef(null);
 
-  useEffect(() => {
-    setFetching(true);
+  const query = useQuery({
+    queryKey: ["products", pno],
+    queryFn: () => getOne(pno), //상품 정보 가져오기
+    staleTime: Infinity, //무한대로 캐시 -> 수정 시, 오래 걸릴 수 있음
+  });
 
-    getOne(pno).then((data) => {
-      setProduct(data);
-      setFetching(false);
-    });
-  }, [pno]);
+  useEffect(() => {
+    if (query.isSuccess) {
+      setProduct(query.data);
+    }
+  }, [pno, query.data, query.isSuccess]);
 
   const handleChangeProduct = (e) => {
     product[e.target.name] = e.target.value;
@@ -70,45 +79,46 @@ function ModifyComponent({ pno }) {
       formData.append("uploadFileNames", product.uploadFileNames[i]);
     }
 
-    setFetching(true);
-
-    putOne(pno, formData).then((data) => {
-      setResult("Modified");
-      setFetching(false);
-    });
+    modMutation.mutate(formData);
   };
 
   const handleClickDelete = () => {
-    setFetching(true);
-
-    deleteOne(pno).then((data) => {
-      setResult("Deleted");
-      setFetching(false);
-    });
+    delMutation.mutate(pno);
   };
 
+  const QueryClient = useQueryClient();
+
+  //모달창 닫기
   const closeModal = () => {
-    if (result === "Modified") {
-      moveToRead(pno);
-    } else if (result === "Deleted") {
-      moveToList({ page: 1 });
+    QueryClient.invalidateQueries(["products", pno]); //삭제,수정 성공하면 해당 상품 정보 캐시 삭제
+    QueryClient.invalidateQueries("products/list"); //삭제,수정 성공하면 상품 리스트 캐시 삭제
+    if (delMutation.isSuccess) {
+      moveToList();
     }
-    setResult(null);
+
+    if (modMutation.isSuccess) {
+      moveToRead(pno);
+    }
   };
 
   return (
     <div className="border-2 border-sky-200 mt-10 m-2 p-4">
-      {fetching ? <FetchingModal /> : <></>}
+      {query.isFetching || delMutation.isPending || modMutation.isPending ? ( //데이터 가져오는 중이거나 삭제 중이거나 수정 중이면 FetchingModal을 보여줌
+        <FetchingModal />
+      ) : (
+        <></>
+      )}
 
-      {result ? (
+      {delMutation.isSuccess || modMutation.isSuccess ? ( //삭제 성공하면 ResultModal을 보여줌
         <ResultModal
-          title={`${result}`}
-          content={"Processed successfully."} //결과 모달창
+          title={"Product Modify Result"}
+          content={"Product has been modified."}
           callbackFn={closeModal}
         ></ResultModal>
       ) : (
         <></>
       )}
+
       <div className="flex justify-center">
         <div className="relative mb-4 flex w-full flex-wrap items-stretch">
           <div className="w-1/5 p-6 text-right font-bold">Matjib Name</div>
