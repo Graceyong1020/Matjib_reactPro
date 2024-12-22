@@ -3,6 +3,7 @@ import { postAdd } from "../../api/productsApi";
 import FetchingModal from "../common/FetchingModal";
 import ResultModal from "../common/ResultModal";
 import useCustomMove from "../../hooks/useCustomMove";
+import { useQueryClient, useMutation } from "@tanstack/react-query";
 
 const initState = {
   pname: "",
@@ -14,9 +15,12 @@ const initState = {
 const AddComponent = () => {
   const [product, setProduct] = useState({ ...initState });
   const uploadRef = useRef(); // 파일 업로드를 위한 ref
-  const [fetching, setFetching] = useState(false);
-  const [result, setResult] = useState(null);
+
   const { moveToList } = useCustomMove();
+
+  const addMutation = useMutation({
+    mutationFn: (product) => postAdd(product),
+  });
 
   const handleChangeProduct = (e) => {
     // 상품 정보 변경
@@ -43,7 +47,17 @@ const AddComponent = () => {
 
     console.log(formData);
 
-    try {
+    addMutation.mutate(formData);
+  };
+
+  const QueryClient = useQueryClient();
+
+  const closeModal = () => {
+    QueryClient.invalidateQueries("products/list");
+    moveToList({ page: 1 }); // 모달창 닫히면 리스트로 이동
+  };
+
+  /*  try {
       setFetching(true);
       const response = await postAdd(formData);
       console.log(response);
@@ -54,10 +68,21 @@ const AddComponent = () => {
       console.error("Error adding product:", error);
       setFetching(false);
     }
-  };
+  }; */
 
   return (
     <div className="border-2 border-sky-200 mt-10 m-2 p-4">
+      {addMutation.isPending ? <FetchingModal /> : <></>}{" "}
+      {/* pending 상태일때만 FetchingModal을 보여줌 */}
+      {addMutation.isSuccess ? (
+        <ResultModal
+          title={"Product Add Result"}
+          content={`${addMutation.data.result} has been added.`}
+          callbackFn={closeModal}
+        />
+      ) : (
+        <></>
+      )}
       <div className="flex justify-center">
         <div className="relative mb-4 flex w-full flex-wrap items-stretch">
           <div className="w-1/5 p-6 text-right font-bold">Matjib Name</div>
@@ -118,9 +143,6 @@ const AddComponent = () => {
           </button>
         </div>
       </div>
-
-      {fetching ? <FetchingModal /> : <></>}
-      {result ? <ResultModal result={result} /> : <></>}
     </div>
   );
 };
