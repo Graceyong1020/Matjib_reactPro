@@ -1,14 +1,43 @@
 // 로그인 관련 정보를 처리하는 커스텀 훅
-import { loginPostAsync } from "./../slices/loginSlice";
-import { useDispatch, useSelector } from "react-redux";
+
 import { useNavigate } from "react-router-dom";
-import { logout } from "./../slices/loginSlice";
+
 import { Navigate, createSearchParams } from "react-router-dom";
+import { useRecoilState, useResetRecoilState } from "recoil";
+import { signinState } from "../atoms/signinState";
+import { removeCookie, setCookie } from "../util/cookieUtil";
+import { loginPost } from "../api/memberApi";
+import { cartState } from "../atoms/cartState";
 
 const useCustomLogin = () => {
   const navigate = useNavigate();
-  const dispatch = useDispatch();
-  const loginState = useSelector((state) => state.loginSlice);
+
+  const [loginState, setLoginState] = useRecoilState(signinState); // login
+  const resetState = useResetRecoilState(signinState); // logout
+
+  const resetCartState = useResetRecoilState(cartState); // logout 시 카트 초기화
+
+  const isLogin = loginState.email ? true : false; // 로그인 여부 확인
+
+  const doLogin = async (loginParam) => {
+    // 로그인 처리
+    const result = await loginPost(loginParam);
+    saveAsCookie(result);
+    return result; // 로그인 결과 리턴
+  };
+
+  // 로그인 쿠키 저장
+  const saveAsCookie = (data) => {
+    setCookie("member", JSON.stringify(data), 1);
+    setLoginState(data);
+  };
+
+  const doLogout = () => {
+    // 로그아웃 처리
+    removeCookie("member");
+    resetState();
+    resetCartState();
+  };
 
   const exceptionHandle = (ex) => {
     console.log("Exception------------------------");
@@ -18,34 +47,16 @@ const useCustomLogin = () => {
     const errorStr = createSearchParams({ error: errorMsg }).toString();
 
     if (errorMsg === "REQUIRE_LOGIN") {
-      alert("로그인 해야만 합니다.");
+      alert("Login is required.");
       navigate({ pathname: "/member/login", search: errorStr });
       return;
     }
 
     if (ex.response.data.error === "ERROR_ACCESSDENIED") {
-      alert("해당 메뉴를 사용할 수 있는 권한이 없습니다.");
+      alert("Access Denied. Please check your role.");
       navigate({ pathname: "/member/login", search: errorStr });
       return;
     }
-  };
-
-  const isLogin = loginState.email ? true : false; // 로그인 여부 확인
-
-  const doLogin = async (loginParam) => {
-    // 로그인 처리
-    const action = await dispatch(loginPostAsync(loginParam));
-    if (loginPostAsync.fulfilled.match(action)) {
-      return action.payload;
-    } else {
-      throw new Error(action.payload || "Login failed");
-    }
-  };
-
-  const doLogout = () => {
-    // 로그아웃 처리
-    dispatch(logout());
-    console.log("Logged out:", loginState); // 로그아웃 후 상태 확인
   };
 
   const moveToPath = (path) => {
@@ -72,6 +83,7 @@ const useCustomLogin = () => {
     moveToLogin,
     moveToLoginReturn,
     exceptionHandle,
+    saveAsCookie, // kakaotalk login 할 수 있게
   };
 };
 

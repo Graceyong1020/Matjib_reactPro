@@ -15,7 +15,7 @@ const CartItemComponent = ({
   email,
 }) => {
   const handleClickQty = (amount) => {
-    changeCart({ email, cino, pno, qty: qty + amount });
+    changeCart({ email: email, cino: cino, pno: pno, qty: qty + amount });
   };
 
   return (

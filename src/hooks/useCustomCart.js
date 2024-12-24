@@ -1,22 +1,37 @@
-import { postChangeCartAsync, getCartItemsAsync } from "./../slices/cartSlice";
-import { useDispatch, useSelector } from "react-redux";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { getCartItems, postChangeCart } from "../api/cartApi";
+import { useRecoilState } from "recoil";
+import { cartState } from "../atoms/cartState";
+import { useEffect } from "react";
 
 const useCustomCart = () => {
-  // 카트에 있는 상품 바로 보여주기
-  const cartItems = useSelector((state) => state.cartSlice);
+  const [cartItems, setCartItems] = useRecoilState(cartState);
 
-  const dispatch = useDispatch();
+  const queryClient = useQueryClient();
 
-  const refreshCart = () => {
-    // 카트 아이템 가져오기
-    dispatch(getCartItemsAsync());
-  };
+  const changeMutation = useMutation({
+    mutationFn: (param) => postChangeCart(param),
+    onSuccess: (result) => setCartItems(result),
+  });
+
+  const query = useQuery({
+    queryKey: ["cart"],
+    queryFn: getCartItems,
+    staleTime: 1000 * 60 * 60,
+  }); // 1 hour
+
+  useEffect(() => {
+    if (query.isSuccess || changeMutation.isSuccess) {
+      queryClient.invalidateQueries("cart");
+      setCartItems(query.data);
+    }
+  }, [query.isSuccess, query.data]);
 
   const changeCart = (param) => {
-    // 카트 아이템 변경
-    dispatch(postChangeCartAsync(param));
+    changeMutation.mutate(param);
   };
 
-  return { cartItems, refreshCart, changeCart };
+  return { cartItems, changeCart };
 };
+
 export default useCustomCart;

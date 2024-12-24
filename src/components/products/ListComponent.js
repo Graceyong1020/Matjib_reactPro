@@ -27,14 +27,14 @@ const ListComponent = () => {
 
   const { exceptionHandle, moveToLoginReturn } = useCustomLogin();
 
-  // const queryClient = useQueryClient();
+  const queryClient = useQueryClient();
 
   const handleClickPage = (pageParam) => {
     /* if (pageParam.page === parseInt(page)) {
       queryClient.invalidateQueries("products/list");
     } */
 
-    moveToList(pageParam.page);
+    moveToList(pageParam);
   };
 
   const { data, isFetching, error, isError } = useQuery({

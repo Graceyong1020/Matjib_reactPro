@@ -50,10 +50,10 @@ const AddComponent = () => {
     addMutation.mutate(formData);
   };
 
-  const QueryClient = useQueryClient();
+  const queryClient = useQueryClient();
 
   const closeModal = () => {
-    QueryClient.invalidateQueries("products/list");
+    queryClient.invalidateQueries("products/list");
     moveToList({ page: 1 }); // 모달창 닫히면 리스트로 이동
   };
 

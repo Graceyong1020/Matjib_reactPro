@@ -1,9 +1,9 @@
 import { Link } from "react-router-dom";
 import MATJIBGO from "../../assets/MATJIBGO.png";
-import { useSelector } from "react-redux";
+import useCustomLogin from "../../hooks/useCustomLogin";
 
 const BasicMenu = () => {
-  const loginState = useSelector((state) => state.loginSlice); // store에 있는 state를 가져옴
+  const { loginState } = useCustomLogin();
 
   return (
     <nav id="navbar" className="bg-purple-300 text-white shadow-md">

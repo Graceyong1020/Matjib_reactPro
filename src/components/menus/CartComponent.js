@@ -1,30 +1,17 @@
 //비동기 통신으로 카트 정보를 받아와서 보여줌
 
-import { useEffect, useMemo } from "react";
 import useCustomLogin from "../../hooks/useCustomLogin";
 import useCustomCart from "../../hooks/useCustomCart";
 import CartItemComponent from "../cart/CartItemComponent";
+import { useRecoilValue } from "recoil";
+import { cartTotalState } from "../../atoms/cartState";
 
 const CartComponent = () => {
   const { isLogin, loginState } = useCustomLogin();
 
-  const { refreshCart, cartItems, changeCart } = useCustomCart();
+  const { cartItems, changeCart } = useCustomCart();
 
-  const total = useMemo(() => {
-    let total = 0;
-
-    for (const item of cartItems) {
-      total += item.price * item.qty;
-    }
-    return total;
-  }, [cartItems]);
-
-  useEffect(() => {
-    //로그인이 되어있으면 장바구니 정보를 가져옴
-    if (isLogin) {
-      refreshCart();
-    }
-  }, [isLogin]);
+  const totalValue = useRecoilValue(cartTotalState);
 
   return (
     <div className="w-full">
@@ -54,7 +41,7 @@ const CartComponent = () => {
 
           <div>
             <div className="text-2xl text-right font-extrabold">
-              TOTAL: {total}
+              TOTAL: {totalValue}
             </div>
           </div>
         </div>

@@ -20,8 +20,7 @@ const host = API_SERVER_HOST;
 
 function ModifyComponent({ pno }) {
   const [product, setProduct] = useState(initState);
-  const [fetching, setFetching] = useState(false);
-  const [result, setResult] = useState(false); //결과 상태
+
   const { moveToList, moveToRead } = useCustomMove();
 
   const delMutation = useMutation({ mutationFn: (pno) => deleteOne(pno) });
@@ -86,12 +85,12 @@ function ModifyComponent({ pno }) {
     delMutation.mutate(pno);
   };
 
-  const QueryClient = useQueryClient();
+  const queryClient = useQueryClient();
 
   //모달창 닫기
   const closeModal = () => {
-    QueryClient.invalidateQueries(["products", pno]); //삭제,수정 성공하면 해당 상품 정보 캐시 삭제
-    QueryClient.invalidateQueries("products/list"); //삭제,수정 성공하면 상품 리스트 캐시 삭제
+    queryClient.invalidateQueries(["products", pno]); //삭제,수정 성공하면 해당 상품 정보 캐시 삭제
+    queryClient.invalidateQueries("products/list"); //삭제,수정 성공하면 상품 리스트 캐시 삭제
     if (delMutation.isSuccess) {
       moveToList();
     }
