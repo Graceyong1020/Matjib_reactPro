@@ -7,7 +7,7 @@ function ReadPage(props) {
 
   return (
     <div className="p-4 w-full bg-white mt-6">
-      <div className="text-3xl font-extrabold">Matjib Read Page Component</div>
+      <div className="text-3xl font-extrabold">My Matjib</div>
 
       <ReadComponent pno={pno}></ReadComponent>
     </div>

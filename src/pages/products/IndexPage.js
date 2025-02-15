@@ -7,7 +7,7 @@ function IndexPage(props) {
 
   return (
     <BasicLayout>
-      <div className="text-black font-extrabold -mt-10">Matjib List</div>
+      {/* <div className="text-black font-extrabold -mt-10">Matjib List</div> */}
 
       <div className="w-full flex m-2 p-2 ">
         <div

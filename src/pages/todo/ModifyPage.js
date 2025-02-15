@@ -6,7 +6,7 @@ const ModifyPage = () => {
 
   return (
     <div className="p-4 w-full bg-white">
-      <div className="text-3xl font-extrabold">WishList Modify Page</div>
+      <div className="text-3xl font-extrabold">Tasty Spot Modify Page</div>
       <ModifyComponent tno={tno} />
     </div>
   );
